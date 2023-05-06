@@ -1,0 +1,5 @@
+rootProject.name = 'sharebill'
+include 'sharebill-web'
+include 'sharebill-service'
+include 'sharebill-core'
+

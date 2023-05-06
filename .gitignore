@@ -1,0 +1,6 @@
+/.idea
+/sharebill-web/build
+/sharebill-web/src/main/resources/static/**
+/sharebill-service/build
+/sharebill-core/build
+

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="biryukov" id="20230423-create-schema-sharebill">
+        <comment></comment>
+        <sql>
+            CREATE SCHEMA sharebill;
+        </sql>
+    </changeSet>
+
+    <changeSet author="biryukov" id="20230423-create-table-room">
+        <comment></comment>
+        <sql>
+            CREATE TABLE sharebill.room (
+                id uuid primary key,
+                room varchar
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet author="biryukov" id="20230423-create-table-product">
+        <comment></comment>
+        <sql>
+            CREATE TABLE sharebill.product (
+                id uuid primary key,
+                name varchar,
+                price integer,
+                room_id uuid,
+                foreign key (room_id) references sharebill.room(id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet author="biryukov" id="20230423-create-table-person">
+        <comment></comment>
+        <sql>
+            CREATE TABLE sharebill.person (
+                id uuid primary key,
+                name varchar,
+                room_id uuid,
+                foreign key (room_id) references sharebill.room(id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet author="biryukov" id="20230423-create-table-payer">
+        <comment></comment>
+        <sql>
+            CREATE TABLE sharebill.payer (
+                product_id uuid,
+                person_id uuid,
+                primary key (product_id, person_id),
+                foreign key (product_id) references sharebill.product(id),
+                foreign key (person_id) references sharebill.person(id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet author="biryukov" id="20230423-create-table-consumer">
+        <comment></comment>
+        <sql>
+            CREATE TABLE sharebill.consumer (
+                product_id uuid,
+                person_id uuid,
+                primary key (product_id, person_id),
+                foreign key (product_id) references sharebill.product(id),
+                foreign key (person_id) references sharebill.person(id)
+            );
+        </sql>
+    </changeSet>
+
+
+
+</databaseChangeLog>
