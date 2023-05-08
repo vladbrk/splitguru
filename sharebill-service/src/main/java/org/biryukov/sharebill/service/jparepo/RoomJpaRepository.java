@@ -7,5 +7,4 @@ import java.util.UUID;
 
 public interface RoomJpaRepository extends CrudRepository<Room, UUID> {
 
-    Room findByRoom(String room);
 }

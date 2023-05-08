@@ -53,14 +53,14 @@ public class MemberApiController {
 
 
 
-    @GetMapping("/api/{room}/members/find_by_global_session")
+    @GetMapping("/api/{roomId}/members/find_by_global_session")
     @ResponseBody
-    public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> findMembersByGlobalSession(@PathVariable String room, HttpServletRequest request) {
+    public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> findMembersByGlobalSession(@PathVariable UUID roomId, HttpServletRequest request) {
         if (request.getCookies() != null) {
             List<Cookie> cookies = Arrays.stream(request.getCookies()).filter(c -> c.getName().equals("GLOBAL_ID")).collect(Collectors.toList());
             if (cookies.size() > 0) {
                 UUID globalSessionId = UUID.fromString(cookies.get(0).getValue());
-                List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> members = personJdbcRepository.findPersonsByGlobalSession(room, globalSessionId);
+                List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> members = personJdbcRepository.findPersonsByGlobalSession(roomId, globalSessionId);
 
                 return members;
             }
@@ -69,12 +69,12 @@ public class MemberApiController {
     }
 
 
-    @PostMapping("/api/room/{room}/member/add")
+    @PostMapping("/api/room/{roomId}/member/add")
     @ResponseBody
-    public Person user(@PathVariable String room, @RequestBody Person user, HttpServletRequest request) {
+    public Person user(@PathVariable UUID roomId, @RequestBody Person user, HttpServletRequest request) {
         user.setId(UUID.randomUUID());
 
-        Room r = roomJpaRepository.findByRoom(room);
+        Room r = roomJpaRepository.findById(roomId).get();
         List<Cookie> cookies = Arrays.stream(request.getCookies())
                 .filter(cookie -> "GLOBAL_ID".equals(cookie.getName()))
                 .collect(Collectors.toList());
@@ -89,15 +89,15 @@ public class MemberApiController {
             p.setGlobalSession(globalSession);
         }
         personJpaRepository.save(p);
-        messagingTemplate.convertAndSend("/topic/" + room + "/members", personJpaRepository.findByRoom(room));
+        messagingTemplate.convertAndSend("/topic/" + roomId + "/members", personJpaRepository.findByRoom(roomId));
         return user;
     }
 
 
-    @GetMapping("/api/room/{room}/members")
+    @GetMapping("/api/room/{roomId}/members")
     @ResponseBody
-    public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> members(@PathVariable String room) {
-        List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> persons = personJdbcRepository.findPerson(room);
+    public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> members(@PathVariable UUID roomId) {
+        List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> persons = personJdbcRepository.findPerson(roomId);
         return persons;
     }
 

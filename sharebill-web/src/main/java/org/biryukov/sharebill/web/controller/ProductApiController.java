@@ -51,16 +51,16 @@ public class ProductApiController {
     private SettlmentService settlmentService;
 
 
-    @GetMapping("/api/room/{room}/products")
+    @GetMapping("/api/room/{roomId}/products")
     @ResponseBody
-    public List<org.biryukov.sharebill.service.jparepo.entity.Product> products(@PathVariable String room) {
-        return productJpaRepository.findByRoom(room);
+    public List<org.biryukov.sharebill.service.jparepo.entity.Product> products(@PathVariable UUID roomId) {
+        return productJpaRepository.findByRoom(roomId);
     }
 
-    @GetMapping("/api/room/{room}/settlement/calculate")
+    @GetMapping("/api/room/{roomId}/settlement/calculate")
     @ResponseBody
-    public org.biryukov.sharebill.service.service.pojo.Settlement calculateSettlement(@PathVariable String room) {
-        return settlmentService.calculate(room);
+    public org.biryukov.sharebill.service.service.pojo.Settlement calculateSettlement(@PathVariable UUID roomId) {
+        return settlmentService.calculate(roomId);
     }
 
 }

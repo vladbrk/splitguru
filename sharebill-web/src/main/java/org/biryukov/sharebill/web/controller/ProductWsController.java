@@ -40,29 +40,29 @@ public class ProductWsController {
     private SettlmentService settlmentService;
 
 
-    @MessageMapping("/{room}/addproduct")
-    @SendTo("/topic/{room}/products")
-    public List<org.biryukov.sharebill.service.jparepo.entity.Product> addProduct(@DestinationVariable String room, @Payload Product product) {
-        Room roomEntity = roomJpaRepository.findByRoom(room);
+    @MessageMapping("/{roomId}/addproduct")
+    @SendTo("/topic/{roomId}/products")
+    public List<org.biryukov.sharebill.service.jparepo.entity.Product> addProduct(@DestinationVariable UUID roomId, @Payload Product product) {
+        Room roomEntity = roomJpaRepository.findById(roomId).get();
 
         productJpaRepository.save(Converter.convertToEntityProduct(product, UUID.randomUUID(), roomEntity));
 
-        org.biryukov.sharebill.service.service.pojo.Settlement settlement =  settlmentService.calculate(room);
-        messagingTemplate.convertAndSend(String.format("/topic/%s/receipt/calculate", room), settlement);
-        return productJpaRepository.findByRoom(room);
+        org.biryukov.sharebill.service.service.pojo.Settlement settlement =  settlmentService.calculate(roomId);
+        messagingTemplate.convertAndSend(String.format("/topic/%s/receipt/calculate", roomId), settlement);
+        return productJpaRepository.findByRoom(roomId);
     }
 
-    @MessageMapping("/{room}/product/update")
-    @SendTo("/topic/{room}/products")
-    public List<org.biryukov.sharebill.service.jparepo.entity.Product> updateProduct(@DestinationVariable String room, @Payload Product product) {
-        Room roomEntity = roomJpaRepository.findByRoom(room);
+    @MessageMapping("/{roomId}/product/update")
+    @SendTo("/topic/{roomId}/products")
+    public List<org.biryukov.sharebill.service.jparepo.entity.Product> updateProduct(@DestinationVariable UUID roomId, @Payload Product product) {
+        Room roomEntity = roomJpaRepository.findById(roomId).get();
 
         productJpaRepository.save(Converter.convertToEntityProduct(product, roomEntity));
 
-        org.biryukov.sharebill.service.service.pojo.Settlement settlement =  settlmentService.calculate(room);
-        messagingTemplate.convertAndSend(String.format("/topic/%s/receipt/calculate", room), settlement);
+        org.biryukov.sharebill.service.service.pojo.Settlement settlement =  settlmentService.calculate(roomId);
+        messagingTemplate.convertAndSend(String.format("/topic/%s/receipt/calculate", roomId), settlement);
 
-        return productJpaRepository.findByRoom(room);
+        return productJpaRepository.findByRoom(roomId);
     }
 
 

@@ -14,6 +14,7 @@ import org.biryukov.sharebill.service.service.SettlmentService;
 import org.biryukov.sharebill.web.controller.pojo.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,25 +52,21 @@ public class RoomApiController {
     private SettlmentService settlmentService;
 
 
-    @GetMapping("/api/room/create/{room}")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public Map<String, Boolean> createRoom(@PathVariable String room, HttpServletRequest request) {
-        if (roomJpaRepository.findByRoom(room) == null) {
-            Room r = new Room();
-            r.setId(UUID.randomUUID());
-            r.setRoom(room);
-            //roomJpaRepository.save(r);
-            roomJdbcRepository.createRoom(room);
-            return Collections.singletonMap("success", Boolean.TRUE);
+    @PostMapping("/api/room/create")
+    public ResponseEntity<Room> createRoom(@RequestBody Room room) {
+        if (room.getRoom().isBlank()) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        return Collections.singletonMap("success", Boolean.FALSE);
+        room.setId(UUID.randomUUID());
+        room = roomJpaRepository.save(room);
+        //roomJdbcRepository.createRoom(room);
+        return new ResponseEntity(room, HttpStatus.OK);
     }
 
-    @GetMapping("/api/room/check/{room}")
+    @GetMapping("/api/room/check/{roomId}")
     @ResponseBody
-    public Map<String, Boolean> checkRoom(@PathVariable String room, HttpServletRequest request) {
-        boolean exists = roomJpaRepository.findByRoom(room) != null;
+    public Map<String, Boolean> checkRoom(@PathVariable UUID roomId, HttpServletRequest request) {
+        boolean exists = roomJpaRepository.findById(roomId).isPresent();
         return Collections.singletonMap("success", exists);
     }
 

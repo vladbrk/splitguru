@@ -71,10 +71,10 @@ public class SettlmentServiceImpl implements SettlmentService {
     private Map<UUID, String> personCache = new HashMap<>();
 
     @Override
-    public Settlement calculate(String room) {
+    public Settlement calculate(UUID roomId) {
         Settlement settlement = new Settlement();
 
-        List<Product> products = productJpaRepository.findByRoom(room);
+        List<Product> products = productJpaRepository.findByRoom(roomId);
 
         if (products.isEmpty()) {
             return settlement;

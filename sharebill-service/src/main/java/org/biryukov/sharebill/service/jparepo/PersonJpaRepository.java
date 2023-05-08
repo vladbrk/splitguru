@@ -12,6 +12,6 @@ import java.util.UUID;
 
 public interface PersonJpaRepository extends CrudRepository<Person, UUID> {
 
-    @Query(value = "SELECT p FROM Person p JOIN p.room r WHERE r.room = :room")
-    List<Person> findByRoom(@Param("room") String room);
+    @Query(value = "SELECT p FROM Person p JOIN p.room r WHERE r.id = :roomId")
+    List<Person> findByRoom(@Param("roomId") UUID roomId);
 }
