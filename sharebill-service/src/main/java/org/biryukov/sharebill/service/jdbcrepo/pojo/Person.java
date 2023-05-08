@@ -1,4 +1,4 @@
-package org.biryukov.sharebill.service.jdbcrepo;
+package org.biryukov.sharebill.service.jdbcrepo.pojo;
 
 import java.util.UUID;
 

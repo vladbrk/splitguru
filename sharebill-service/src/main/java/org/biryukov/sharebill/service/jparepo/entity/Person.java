@@ -18,6 +18,10 @@ public class Person {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @ManyToOne
+    @JoinColumn(name = "global_session_id")
+    private GlobalSession globalSession;
+
     public UUID getId() {
         return id;
     }
@@ -40,5 +44,13 @@ public class Person {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public GlobalSession getGlobalSession() {
+        return globalSession;
+    }
+
+    public void setGlobalSession(GlobalSession globalSession) {
+        this.globalSession = globalSession;
     }
 }

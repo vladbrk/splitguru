@@ -22,10 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//@Controller
-//@RequestMapping("/")
-//@Transactional
-public class ApiController {
+@Controller
+@RequestMapping("/")
+public class MemberApiController {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -52,43 +51,7 @@ public class ApiController {
     private SettlmentService settlmentService;
 
 
-    @GetMapping("/api/room/create/{room}")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public Map<String, Boolean> createRoom(@PathVariable String room, HttpServletRequest request) {
-        if (roomJpaRepository.findByRoom(room) == null) {
-            Room r = new Room();
-            r.setId(UUID.randomUUID());
-            r.setRoom(room);
-            //roomJpaRepository.save(r);
-            roomJdbcRepository.createRoom(room);
-            return Collections.singletonMap("success", Boolean.TRUE);
-        }
-        return Collections.singletonMap("success", Boolean.FALSE);
-    }
 
-    @GetMapping("/api/room/check/{room}")
-    @ResponseBody
-    public Map<String, Boolean> checkRoom(@PathVariable String room, HttpServletRequest request) {
-        boolean exists = roomJpaRepository.findByRoom(room) != null;
-        return Collections.singletonMap("success", exists);
-    }
-
-    @GetMapping("/api/room/find_by_global_session")
-    @ResponseBody
-    public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Room> findRoomByGlobalSession(HttpServletRequest request) {
-
-        if (request.getCookies() != null) {
-            List<Cookie> cookies = Arrays.stream(request.getCookies()).filter(c -> c.getName().equals("GLOBAL_ID")).collect(Collectors.toList());
-            if (cookies.size() > 0) {
-                UUID globalSessionId = UUID.fromString(cookies.get(0).getValue());
-                List<org.biryukov.sharebill.service.jdbcrepo.pojo.Room> rooms = roomJdbcRepository.findRoomByGlobalSession(globalSessionId);
-
-                return rooms;
-            }
-        }
-        return Collections.emptyList();
-    }
 
     @GetMapping("/api/{room}/members/find_by_global_session")
     @ResponseBody
@@ -138,16 +101,5 @@ public class ApiController {
         return persons;
     }
 
-    @GetMapping("/api/room/{room}/products")
-    @ResponseBody
-    public List<org.biryukov.sharebill.service.jparepo.entity.Product> products(@PathVariable String room) {
-        return productJpaRepository.findByRoom(room);
-    }
-
-    @GetMapping("/api/room/{room}/settlement/calculate")
-    @ResponseBody
-    public org.biryukov.sharebill.service.service.pojo.Settlement calculateSettlement(@PathVariable String room) {
-        return settlmentService.calculate(room);
-    }
 
 }

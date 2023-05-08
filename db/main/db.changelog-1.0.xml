@@ -75,5 +75,27 @@
     </changeSet>
 
 
+    <changeSet author="biryukov" id="20230507-create-table-global-session">
+        <comment></comment>
+        <sql>
+            CREATE TABLE sharebill.global_session (
+                id UUID PRIMARY KEY,
+                created_ts TIMESTAMP,
+                global_session_id UUID UNIQUE NOT NULL
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet author="biryukov" id="20230507-add-global-session-to-person">
+        <comment></comment>
+        <sql>
+            ALTER TABLE sharebill.person
+            add column global_session_id uuid;
+
+            ALTER TABLE sharebill.person
+            add foreign key (global_session_id) references sharebill.global_session(id);
+        </sql>
+    </changeSet>
+
 
 </databaseChangeLog>

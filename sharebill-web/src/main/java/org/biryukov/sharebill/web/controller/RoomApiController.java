@@ -22,10 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//@Controller
-//@RequestMapping("/")
-//@Transactional
-public class ApiController {
+@Controller
+@RequestMapping("/")
+public class RoomApiController {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -90,64 +89,6 @@ public class ApiController {
         return Collections.emptyList();
     }
 
-    @GetMapping("/api/{room}/members/find_by_global_session")
-    @ResponseBody
-    public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> findMembersByGlobalSession(@PathVariable String room, HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            List<Cookie> cookies = Arrays.stream(request.getCookies()).filter(c -> c.getName().equals("GLOBAL_ID")).collect(Collectors.toList());
-            if (cookies.size() > 0) {
-                UUID globalSessionId = UUID.fromString(cookies.get(0).getValue());
-                List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> members = personJdbcRepository.findPersonsByGlobalSession(room, globalSessionId);
 
-                return members;
-            }
-        }
-        return Collections.emptyList();
-    }
-
-
-    @PostMapping("/api/room/{room}/member/add")
-    @ResponseBody
-    public Person user(@PathVariable String room, @RequestBody Person user, HttpServletRequest request) {
-        user.setId(UUID.randomUUID());
-
-        Room r = roomJpaRepository.findByRoom(room);
-        List<Cookie> cookies = Arrays.stream(request.getCookies())
-                .filter(cookie -> "GLOBAL_ID".equals(cookie.getName()))
-                .collect(Collectors.toList());
-
-        org.biryukov.sharebill.service.jparepo.entity.Person p = new org.biryukov.sharebill.service.jparepo.entity.Person();
-        p.setId(user.getId());
-        p.setName(user.getName());
-        p.setRoom(r);
-        if (!cookies.isEmpty()) {
-            UUID globalSessionId = UUID.fromString(cookies.get(0).getValue());
-            GlobalSession globalSession = globalSessionJpaRepository.findByGlobalSessionId(globalSessionId);
-            p.setGlobalSession(globalSession);
-        }
-        personJpaRepository.save(p);
-        messagingTemplate.convertAndSend("/topic/" + room + "/members", personJpaRepository.findByRoom(room));
-        return user;
-    }
-
-
-    @GetMapping("/api/room/{room}/members")
-    @ResponseBody
-    public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> members(@PathVariable String room) {
-        List<org.biryukov.sharebill.service.jdbcrepo.pojo.Person> persons = personJdbcRepository.findPerson(room);
-        return persons;
-    }
-
-    @GetMapping("/api/room/{room}/products")
-    @ResponseBody
-    public List<org.biryukov.sharebill.service.jparepo.entity.Product> products(@PathVariable String room) {
-        return productJpaRepository.findByRoom(room);
-    }
-
-    @GetMapping("/api/room/{room}/settlement/calculate")
-    @ResponseBody
-    public org.biryukov.sharebill.service.service.pojo.Settlement calculateSettlement(@PathVariable String room) {
-        return settlmentService.calculate(room);
-    }
 
 }

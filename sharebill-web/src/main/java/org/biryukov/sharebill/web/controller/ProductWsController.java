@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 import java.util.*;
 
 @Controller
-public class WebSocketController {
+public class ProductWsController {
 
     @Autowired
     public SimpMessagingTemplate messagingTemplate;

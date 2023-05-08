@@ -1,5 +1,6 @@
 package org.biryukov.sharebill.service.jdbcrepo;
 
+import org.biryukov.sharebill.service.jdbcrepo.pojo.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
