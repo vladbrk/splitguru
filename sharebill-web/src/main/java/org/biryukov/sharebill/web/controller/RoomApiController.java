@@ -8,16 +8,15 @@ import org.biryukov.sharebill.service.jparepo.GlobalSessionJpaRepository;
 import org.biryukov.sharebill.service.jparepo.PersonJpaRepository;
 import org.biryukov.sharebill.service.jparepo.ProductJpaRepository;
 import org.biryukov.sharebill.service.jparepo.RoomJpaRepository;
-import org.biryukov.sharebill.service.jparepo.entity.GlobalSession;
 import org.biryukov.sharebill.service.jparepo.entity.Room;
+import org.biryukov.sharebill.service.service.PinService;
+import org.biryukov.sharebill.service.service.PinServiceImpl;
 import org.biryukov.sharebill.service.service.SettlmentService;
-import org.biryukov.sharebill.web.controller.pojo.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -51,6 +50,9 @@ public class RoomApiController {
     @Autowired
     private SettlmentService settlmentService;
 
+    @Autowired
+    private PinService pinService;
+
 
     @PostMapping("/api/room/create")
     public ResponseEntity<Room> createRoom(@RequestBody Room room) {
@@ -70,6 +72,17 @@ public class RoomApiController {
         return Collections.singletonMap("success", exists);
     }
 
+    @GetMapping("/api/room/by_pin/{pin}")
+    @ResponseBody
+    public ResponseEntity<Room> getByPin(@PathVariable String pin, HttpServletRequest request) {
+        UUID roomId =  pinService.getRoomId(pin);
+        if (roomId == null) {
+            // TODO if room by pin not found, pass message properly (BAD_REQUEST is not proper way)
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(roomJpaRepository.findById(roomId), HttpStatus.OK);
+    }
+
     @GetMapping("/api/room/find_by_global_session")
     @ResponseBody
     public List<org.biryukov.sharebill.service.jdbcrepo.pojo.Room> findRoomByGlobalSession(HttpServletRequest request) {
@@ -84,6 +97,12 @@ public class RoomApiController {
             }
         }
         return Collections.emptyList();
+    }
+
+    @GetMapping("/api/room/{roomId}/share")
+    @ResponseBody
+    public String shareRoom(@PathVariable UUID roomId) {
+        return pinService.generatePin(roomId);
     }
 
 

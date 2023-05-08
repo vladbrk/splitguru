@@ -13,13 +13,14 @@ import org.biryukov.sharebill.service.jparepo.entity.Room;
 import org.biryukov.sharebill.service.service.SettlmentService;
 import org.biryukov.sharebill.web.controller.pojo.Person;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller

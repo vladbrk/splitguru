@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class PinServiceImpl implements PinService {
 
+    // TODO purge pins by TTL
     private final ConcurrentHashMap<String, UUID> pins = new ConcurrentHashMap<>();
 
     private Random r = new Random();
@@ -31,6 +32,7 @@ public class PinServiceImpl implements PinService {
                 synchronized (pins) {
                     if (!pins.containsKey(pin)) {
                         pins.put(pin, roomId);
+                        return pin;
                     }
                 }
             }
@@ -96,7 +98,7 @@ public class PinServiceImpl implements PinService {
 
     @Override
     public UUID getRoomId(String pin) {
-        return null;
+        return pins.get(pin);
     }
 
     private String toString(int f1, int f2, int f3, int f4) {
