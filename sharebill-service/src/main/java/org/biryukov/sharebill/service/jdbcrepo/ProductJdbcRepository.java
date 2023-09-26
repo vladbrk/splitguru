@@ -1,6 +1,7 @@
 package org.biryukov.sharebill.service.jdbcrepo;
 
 import org.biryukov.sharebill.service.jdbcrepo.pojo.Person;
+import org.biryukov.sharebill.service.jparepo.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -37,5 +38,17 @@ public class ProductJdbcRepository {
                     productId,
                     p.getId());
         });
+    }
+
+    public void updatePlainProduct(Product product) {
+        jdbcTemplate.update(
+                "update sharebill.product set name = ?, price = ? where id = ?",
+                product.getName(),
+                product.getPrice(),
+                product.getId());
+    }
+
+    public UUID findRoomId(UUID productId) {
+        return jdbcTemplate.queryForObject("select room_id from sharebill.product where id = ?", UUID.class, productId);
     }
 }
