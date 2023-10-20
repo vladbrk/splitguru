@@ -1,0 +1,14 @@
+[Unit]
+Description=Split Guru service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+Group=root
+ExecStart=java -jar /root/splitguru/sharebill-web-1.0-SNAPSHOT.jar --spring.profiles.active=prod
+
+[Install]
+WantedBy=multi-user.target
